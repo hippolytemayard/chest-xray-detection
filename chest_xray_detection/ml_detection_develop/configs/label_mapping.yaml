@@ -1,0 +1,20 @@
+mapping: 
+  encoding: 
+    'Atelectasis': 1
+    'Cardiomegaly': 2
+    'Effusion': 3
+    'Infiltrate': 4
+    'Mass': 5
+    'Nodule': 6
+    'Pneumonia': 7
+    'Pneumothorax': 8
+
+  decoding:
+    1: 'Atelectasis'
+    2: 'Cardiomegaly'
+    3: 'Effusion'
+    4: 'Infiltrate' 
+    5: 'Mass'
+    6: 'Nodule'
+    7: 'Pneumonia' 
+    8: 'Pneumothorax'
