@@ -7,7 +7,10 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from torch.utils.data import DataLoader
 from torchvision.transforms.v2 import Compose
 
-from chest_xray_detection.ml_detection_develop.configs.settings import DATA_PATH
+from chest_xray_detection.ml_detection_develop.configs.settings import (
+    DATA_PATH,
+    LABEL_MAPPING_DICT,
+)
 from chest_xray_detection.ml_detection_develop.dataset.detection_dataset import (
     DetectionDataset,
 )
@@ -74,7 +77,9 @@ def get_train_val_dataloaders(
 
     label_distribution = {
         phase: {
-            idx: sum(labels[:, idx]) / len(labels) for idx in range(labels.shape[1])
+            LABEL_MAPPING_DICT.mapping.decoding[idx + 1]: sum(labels[:, idx])
+            / len(labels)
+            for idx in range(labels.shape[1])
         }
         for phase, labels in zip(["training", "validation"], [train_labels, val_labels])
     }

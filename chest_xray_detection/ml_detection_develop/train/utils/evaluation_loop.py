@@ -6,6 +6,10 @@ from torch import nn
 from torch.utils.data import DataLoader
 from torchmetrics import MetricCollection
 
+from chest_xray_detection.ml_detection_develop.train.utils.nms import (
+    non_maximum_suppression,
+)
+
 
 @torch.no_grad()
 def evaluation_loop(
@@ -15,6 +19,8 @@ def evaluation_loop(
     metrics_collection: Optional[MetricCollection] = None,
     writer=None,
     device: str | torch.device = "cpu",
+    apply_nms: bool = False,
+    nms_iou_threshold: float = 0.1,
 ) -> dict:
     """
     Model validation loop
@@ -40,15 +46,18 @@ def evaluation_loop(
         images = list(image.to(device) for image in data)
 
         targets = [
-            {
-                k: v.to(device) if isinstance(v, torch.Tensor) else v
-                for k, v in t.items()
-            }
+            {k: v.to(device) if isinstance(v, torch.Tensor) else v for k, v in t.items()}
             for t in targets
         ]
 
         with torch.inference_mode():
             predictions = model(images)
+
+        if apply_nms:
+            predictions = [
+                non_maximum_suppression(predictions=prediction, iou_threshold=nms_iou_threshold)
+                for prediction in predictions
+            ]
 
         if metrics_collection is not None:
             metrics_collection.update(predictions, targets)

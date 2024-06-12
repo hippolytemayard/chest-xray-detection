@@ -6,35 +6,18 @@ import torch
 from omegaconf import OmegaConf
 from torch.utils.tensorboard import SummaryWriter
 
-from chest_xray_detection.ml_detection_develop.configs.settings import (
-    ANNOTATION_PATH,
-)
-from chest_xray_detection.ml_detection_develop.dataset.dataloader import (
-    get_train_val_dataloaders,
-)
+from chest_xray_detection.ml_detection_develop.configs.settings import ANNOTATION_PATH
+from chest_xray_detection.ml_detection_develop.dataset.dataloader import get_train_val_dataloaders
 from chest_xray_detection.ml_detection_develop.dataset.transforms.utils import (
     instantiate_transforms_from_config,
 )
-from chest_xray_detection.ml_detection_develop.metrics.utils import (
-    instantiate_metrics_from_config,
-)
-from chest_xray_detection.ml_detection_develop.models.faster_rcnn import (
-    get_faster_rcnn,
-)
+from chest_xray_detection.ml_detection_develop.metrics.utils import instantiate_metrics_from_config
+from chest_xray_detection.ml_detection_develop.models.faster_rcnn import get_faster_rcnn
 from chest_xray_detection.ml_detection_develop.optimizer import optimizer_dict
-from chest_xray_detection.ml_detection_develop.train.utils.evaluation_loop import (
-    evaluation_loop,
-)
-from chest_xray_detection.ml_detection_develop.train.utils.training_loop import (
-    training_loop,
-)
-from chest_xray_detection.ml_detection_develop.train.utils.validation_loop import (
-    validation_loop,
-)
-from chest_xray_detection.ml_detection_develop.utils.files import (
-    load_yaml,
-    make_exists,
-)
+from chest_xray_detection.ml_detection_develop.train.utils.evaluation_loop import evaluation_loop
+from chest_xray_detection.ml_detection_develop.train.utils.training_loop import training_loop
+from chest_xray_detection.ml_detection_develop.train.utils.validation_loop import validation_loop
+from chest_xray_detection.ml_detection_develop.utils.files import load_yaml, make_exists
 
 
 def stratified_split_train_model_from_config(
@@ -80,13 +63,16 @@ def stratified_split_train_model_from_config(
         transform_config=config.TRAINING.DATASET.TRANSFORMS.VALIDATION
     )
 
-    (train_loader, val_loader) = get_train_val_dataloaders(
+    (train_loader, val_loader, distribution) = get_train_val_dataloaders(
         annotation_filepath=ANNOTATION_PATH,
         batch_size=config.TRAINING.BATCH_SIZE,
         train_transforms=train_transforms,
         val_transforms=val_transforms,
         val_size=config.TRAINING.DATASET.VALIDATION_SPLIT,
     )
+
+    for k, v in distribution.items():
+        logging.info(f"Distribution of {k} set {v}")
 
     optimizer = optimizer_dict[config.TRAINING.OPTIMIZER](
         params=model.parameters(), lr=config.TRAINING.LEARNING_RATE

@@ -145,5 +145,5 @@ class DetectionDataset(Dataset):
         Returns:
             torch.Tensor: Tensor of label integers.
         """
-        labels = [LABEL_MAPPING_DICT.mapping.encoder[label] for label in labels]
+        labels = [LABEL_MAPPING_DICT.mapping.encoding[label] for label in labels]
         return torch.as_tensor(labels, dtype=torch.int64)
