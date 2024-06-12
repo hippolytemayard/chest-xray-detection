@@ -1,0 +1,54 @@
+[tool.ruff]
+line-length = 100
+# lint, pyflakes, pycodestyle
+select = ["F", "E", "W"]
+ignore = ["E501"]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+
+
+[tool.black]
+line-length = 80
+target-version = ['py310']
+include = '\.pyi?$'
+
+[tool.isort]
+line_length = 80
+profile = 'black'
+
+[tool.coverage.run]
+omit = ["*/test_*.py"]
+
+[tool.poetry]
+name = "chest-xray-detection"
+version = "1.0.0"
+description = "Chest X-Ray detection project."
+authors = ["Hippolyte Mayard"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.10.5"
+python-dotenv = "0.20.0"
+omegaconf = "2.2.2"
+torch = "*"
+torchvision = "*"
+jupyterlab = "^4.2.2"
+pandas = "^2.2.2"
+matplotlib = "^3.9.0"
+scikit-learn = "^1.5.0"
+torchmetrics = "^1.4.0.post0"
+tensorboard = "^2.17.0"
+faster-coco-eval = "^1.5.5"
+pycocotools = "^2.0.7"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+matplotlib = "*"
+pylint = "*"
+tensorboard = "*"
+black = "<25.0.0"
+pre-commit = "*"
+jupyterlab = "^4.2.2"
