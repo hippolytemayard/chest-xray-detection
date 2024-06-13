@@ -6,8 +6,9 @@ from torch import nn
 from torch.utils.data import DataLoader
 from torchmetrics import MetricCollection
 
-from chest_xray_detection.ml_detection_develop.train.utils.nms import (
+from chest_xray_detection.ml_detection_develop.train.utils.postprocessing import (
     non_maximum_suppression,
+    filter_scores,
 )
 
 
@@ -21,6 +22,8 @@ def evaluation_loop(
     device: str | torch.device = "cpu",
     apply_nms: bool = False,
     nms_iou_threshold: float = 0.1,
+    apply_scores_filter: bool = False,
+    scores_filter_threshold: float = 0.3,
 ) -> dict:
     """
     Model validation loop
@@ -52,6 +55,12 @@ def evaluation_loop(
 
         with torch.inference_mode():
             predictions = model(images)
+
+        if apply_scores_filter:
+            predictions = [
+                filter_scores(predictions=prediction, scores=scores_filter_threshold)
+                for prediction in predictions
+            ]
 
         if apply_nms:
             predictions = [

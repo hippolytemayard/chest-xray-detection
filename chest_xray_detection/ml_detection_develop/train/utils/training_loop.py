@@ -40,10 +40,7 @@ def training_loop(
         images = list(image.to(device) for image in data)
 
         targets = [
-            {
-                k: v.to(device) if isinstance(v, torch.Tensor) else v
-                for k, v in t.items()
-            }
+            {k: v.to(device) if isinstance(v, torch.Tensor) else v for k, v in t.items()}
             for t in targets
         ]
 

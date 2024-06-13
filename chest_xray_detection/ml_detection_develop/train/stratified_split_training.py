@@ -38,20 +38,23 @@ def stratified_split_train_model_from_config(
         else None
     )
 
+    num_classes = config.TRAINING.DATASET.NUM_CLASSES if not config.TRAINING.MERGE_CLASSES else 2
+    logging.info(f"Number of classes : {num_classes}")
+
     model = get_faster_rcnn(
         pretrained=config.TRAINING.PRETRAINED,
-        num_classes=config.TRAINING.DATASET.NUM_CLASSES,
-        backbone="resnet50",  # config.TRAINING.BACKBONE,
+        num_classes=num_classes,
+        backbone=config.TRAINING.BACKBONE,
         trainable_backbone_layers=3,
     ).to(device)
 
     print(config.TRAINING.BACKBONE)
-    # print(model)
 
-    # logging.info(f"Load state dict")
-    # path_model = "experiments/experiment_5/saved_models/best_model.pt"
-    # model_state_dict = torch.load(path_model)
-    # model.load_state_dict(model_state_dict["model"])
+    logging.info(f"Load state dict")
+    path_model = Path("experiments/experiment_100/saved_models") / "best_model.pt"
+    model_state_dict = torch.load(path_model)
+    model.load_state_dict(model_state_dict["model"])
+    logging.info(f"Loading {path_model}")
 
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     logging.info(f"The model has {trainable_params} trainable parameters")
@@ -69,6 +72,7 @@ def stratified_split_train_model_from_config(
         train_transforms=train_transforms,
         val_transforms=val_transforms,
         val_size=config.TRAINING.DATASET.VALIDATION_SPLIT,
+        merge_classes=config.TRAINING.MERGE_CLASSES,
     )
 
     for k, v in distribution.items():
@@ -77,6 +81,8 @@ def stratified_split_train_model_from_config(
     optimizer = optimizer_dict[config.TRAINING.OPTIMIZER](
         params=model.parameters(), lr=config.TRAINING.LEARNING_RATE
     )
+
+    lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.5)
 
     metrics_collection = instantiate_metrics_from_config(
         metrics_config=config.VALIDATION.METRICS
@@ -97,6 +103,8 @@ def stratified_split_train_model_from_config(
             device=device,
         )
 
+        lr_scheduler.step()
+
         validation_loop(
             model=model,
             loader=val_loader,
@@ -114,17 +122,20 @@ def stratified_split_train_model_from_config(
             device=device,
         )
 
-        if best_map < dict_metrics["map"]:
+        save_dict = {
+            "epoch": epoch,
+            "model": model.state_dict(),
+            "opt": optimizer.state_dict(),
+        }
+        torch.save(save_dict, Path(config.TRAINING.PATH_MODEL) / "checkpoint.pt")
+
+        if best_map < dict_metrics["map_50"]:
             logging.info(
-                f"Validation | model improved from {best_map} to {dict_metrics['map']} | saving model"
+                f"Validation | model improved from {best_map} to {dict_metrics['map_50']} | saving model"
             )
-            best_map = dict_metrics["map"]
-            save_dict = {
-                "epoch": epoch,
-                "model": model.state_dict(),
-                "opt": optimizer.state_dict(),
-                "val_metrics": {"far": best_map},
-            }
+            best_map = dict_metrics["map_50"]
+            save_dict["val_metrics"] = best_map
+
             torch.save(save_dict, Path(config.TRAINING.PATH_MODEL) / "best_model.pt")
 
     return
