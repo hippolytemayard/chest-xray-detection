@@ -7,7 +7,10 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from torch.utils.data import DataLoader
 from torchvision.transforms.v2 import Compose
 
-from chest_xray_detection.ml_detection_develop.configs.settings import DATA_PATH
+from chest_xray_detection.ml_detection_develop.configs.settings import (
+    DATA_PATH,
+    LABEL_MAPPING_DICT,
+)
 from chest_xray_detection.ml_detection_develop.dataset.detection_dataset import (
     DetectionDataset,
 )
@@ -20,6 +23,7 @@ def get_train_val_dataloaders(
     val_transforms: Optional[Compose],
     val_size: float = 0.25,
     num_workers: int = 4,
+    merge_classes: bool = False,
 ) -> tuple[DataLoader, DataLoader, dict]:
     """
     Get training and validation data loaders from a stratified train/val split.
@@ -37,9 +41,7 @@ def get_train_val_dataloaders(
                                              and dictionary representing the distribution of labels in the training set.
     """
     df_annotation = pd.read_csv(annotation_filepath)
-    list_images = [
-        DATA_PATH / i for i in df_annotation["Image Index"].unique().tolist()
-    ]
+    list_images = [DATA_PATH / i for i in df_annotation["Image Index"].unique().tolist()]
     labels = [
         df_annotation[df_annotation["Image Index"] == idx]["Finding Label"].values
         for idx in df_annotation["Image Index"].unique()
@@ -62,6 +64,7 @@ def get_train_val_dataloaders(
         transforms=train_transforms,
         batch_size=batch_size,
         num_workers=num_workers,
+        merge_classes=merge_classes,
     )
 
     val_loader = get_single_dataloader(
@@ -70,11 +73,13 @@ def get_train_val_dataloaders(
         transforms=val_transforms,
         batch_size=batch_size,
         num_workers=num_workers,
+        merge_classes=merge_classes,
     )
 
     label_distribution = {
         phase: {
-            idx: sum(labels[:, idx]) / len(labels) for idx in range(labels.shape[1])
+            LABEL_MAPPING_DICT.mapping.decoding[idx + 1]: sum(labels[:, idx]) / len(labels)
+            for idx in range(labels.shape[1])
         }
         for phase, labels in zip(["training", "validation"], [train_labels, val_labels])
     }
@@ -88,6 +93,7 @@ def get_single_dataloader(
     transforms: Optional[Compose],
     batch_size: int,
     num_workers: int = 4,
+    merge_classes: bool = True,
 ) -> DataLoader:
     """
     Get a single DataLoader from image paths and annotations file.
@@ -106,6 +112,7 @@ def get_single_dataloader(
         images_list=images_list,
         annotation_filepath=annotation_filepath,
         transforms=transforms,
+        merge_classes=merge_classes,
     )
 
     dataloader = DataLoader(

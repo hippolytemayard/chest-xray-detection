@@ -1,4 +1,4 @@
-EXPERIMENT: 61
+EXPERIMENT: 101
 ROOT_PROJECT: /home/ubuntu/code/chest-xray-detection
 EXPERIMENT_FOLDER: ${ROOT_PROJECT}/experiments
 ROOT_EXPERIMENT: ${EXPERIMENT_FOLDER}/experiment_${EXPERIMENT}
@@ -7,9 +7,9 @@ TRAINING:
   EPOCHS: 100
   BACKBONE: "resnet50"
   PRETRAINED: TRUE
-  BATCH_SIZE: 8
+  BATCH_SIZE: 10
   OPTIMIZER: SGD 
-  LEARNING_RATE:  0.01 #0.001
+  LEARNING_RATE:  0.005 #0.001
   EVALUATION_FREQUENCY: 1
   PRINT_FREQ: 1000
   PATH_MODEL : ${..ROOT_EXPERIMENT}/saved_models
@@ -17,34 +17,20 @@ TRAINING:
   ENABLE_TENSORBOARD : TRUE
   TENSORBOARD_DIR: ${..ROOT_EXPERIMENT}/tensorboard_logs
 
+  MERGE_CLASSES : FALSE
   CROSS_VALIDATION : FALSE
 
   DATASET:
     PATH_LABELS : ./data/label_train.txt
     IMAGES_DIR : ./data/train_img/
     NUM_CLASSES: 9
-    VALIDATION_SPLIT: 0.25
+    VALIDATION_SPLIT: 0.2
     RANDOM_SEED: 42
-
-    TRANSFORMS:
-      TRAINING:
-        frameworks: ["torchvision", "torchvision"]
-        classes: ["RGB" , "RandomHorizontalFlip"]
-        classes_params: [
-          {},
-          {"p": 0.5},
-        ]
-      VALIDATION:
-        frameworks: ["torchvision"]
-        classes: ["RGB"]
-        classes_params: [
-          {},
-        ]
 
     #TRANSFORMS:
     #  TRAINING:
     #    frameworks: ["torchvision", "torchvision"]
-    #    classes: ["RGB", "RandomHorizontalFlip"]
+    #    classes: ["RGB" , "RandomHorizontalFlip"]
     #    classes_params: [
     #      {},
     #      {"p": 0.5},
@@ -55,6 +41,23 @@ TRAINING:
     #    classes_params: [
     #      {},
     #    ]
+
+    TRANSFORMS:
+      TRAINING:
+        frameworks: ["torchvision","torchvision","torchvision","torchvision"]
+        classes: ["RGB", "RandomHorizontalFlip", "RandomRotation", "RandomVerticalFlip"]
+        classes_params: [
+          {},
+          {"p": 0.5},
+          {"degrees": 10},
+          {"p": 0.2},
+        ]
+      VALIDATION:
+        frameworks: ["torchvision"]
+        classes: ["RGB"]
+        classes_params: [
+          {},
+        ]
 
 
 VALIDATION:

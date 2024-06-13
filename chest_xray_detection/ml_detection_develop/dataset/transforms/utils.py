@@ -40,6 +40,8 @@ def instantiate_transforms_from_config(
             fn_params = OmegaConf.to_object(fn_params)
             if framework == "torchvision":
                 fn = getattr(torchvision.transforms.v2, fn_name)(**fn_params)
+            else:
+                continue
             compositions.append(fn)
 
             logging.info(f"compositions: {compositions}")

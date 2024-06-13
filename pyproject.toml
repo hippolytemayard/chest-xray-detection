@@ -9,12 +9,12 @@ ignore = ["E501"]
 
 
 [tool.black]
-line-length = 80
+line-length = 100
 target-version = ['py310']
 include = '\.pyi?$'
 
 [tool.isort]
-line_length = 80
+line_length = 100
 profile = 'black'
 
 [tool.coverage.run]
@@ -41,6 +41,7 @@ torchmetrics = "^1.4.0.post0"
 tensorboard = "^2.17.0"
 faster-coco-eval = "^1.5.5"
 pycocotools = "^2.0.7"
+shapely = "^2.0.4"
 
 [tool.poetry.group.dev]
 optional = true
