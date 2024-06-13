@@ -25,6 +25,7 @@ class DetectionDataset(Dataset):
         images_list: list[Path],
         annotation_filepath: str | Path,
         transforms: Optional[Compose] = None,
+        merge_classes: bool = False,
     ) -> None:
         """
         Initialize the DetectionDataset.
@@ -37,6 +38,7 @@ class DetectionDataset(Dataset):
         self.images_list = images_list
         self.df_annotation = pd.read_csv(annotation_filepath)
         self.transforms = transforms
+        self.merge_classes = merge_classes
 
     def __len__(self) -> int:
         """
@@ -145,5 +147,9 @@ class DetectionDataset(Dataset):
         Returns:
             torch.Tensor: Tensor of label integers.
         """
-        labels = [LABEL_MAPPING_DICT.mapping.encoding[label] for label in labels]
+        if not self.merge_classes:
+            labels = [LABEL_MAPPING_DICT.mapping.encoding[label] for label in labels]
+        else:
+            labels = [1 for _ in labels]
+
         return torch.as_tensor(labels, dtype=torch.int64)
