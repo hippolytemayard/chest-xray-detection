@@ -1,0 +1,28 @@
+MODELS:
+  MULTICLASS_DETECTION:
+    NAME: "multiclass_detection"
+    BACKBONE: "resnet50"
+    CKPT: "/home/ubuntu/code/chest-xray-detection/experiments/experiment_101/saved_models/best_model.pt"
+    NUM_CLASSES: 9
+    TRANSFORMS:
+      INFERENCE:
+        frameworks: ["torchvision","torchvision"]
+        classes: ["ToTensor","RGB"]
+        classes_params: [
+          {},
+          {},
+        ]
+    
+    POSTPROCESSING:
+      THRESHOLD : 0.5
+      NMS_IOU_THRESHOLDS : 0.2
+
+    CLASSES:
+      1: 'Atelectasis'
+      2: 'Cardiomegaly'
+      3: 'Effusion'
+      4: 'Infiltrate' 
+      5: 'Mass'
+      6: 'Nodule'
+      7: 'Pneumonia' 
+      8: 'Pneumothorax'
