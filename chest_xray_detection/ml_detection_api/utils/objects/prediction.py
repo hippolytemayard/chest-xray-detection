@@ -63,6 +63,7 @@ class ObjectDetectionFormat:
                 for score, label in zip(self.scores, self.labels)
             ]
         )
+        print(config.THRESHOLD)
         return self.filter_indexes(torch.tensor(to_keep_indexes))
 
     def nms_on_boxes(self, iou_threshold: float = 0.5) -> Optional[torch.Tensor]:

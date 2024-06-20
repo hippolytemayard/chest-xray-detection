@@ -14,7 +14,7 @@ MODELS:
         ]
     
     POSTPROCESSING:
-      THRESHOLD : 0.5
+      THRESHOLD : 0.07
       NMS_IOU_THRESHOLDS : 0.2
 
     CLASSES:

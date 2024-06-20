@@ -37,6 +37,7 @@ class BaseModelWrapper(ABC):
         device: torch.device,
         metadata: Any | None = None,
         max_workers: int = 1,
+        debug: bool = False,
     ) -> None:
         self.model = model
         self.config = config
@@ -46,6 +47,8 @@ class BaseModelWrapper(ABC):
         # thread pool executor
         thread_name_prefix = type(self).__name__.replace("Wrapper", "Thread")
         self.executor = ThreadPoolExecutor(max_workers, thread_name_prefix=thread_name_prefix)
+
+        self.debug = debug
 
     def threaded_call(self, *args, **kwargs) -> Future:
         """Submit __call__ in the thread pool executor for concurrent calls. Pass same arguments as __call__."""
