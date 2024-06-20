@@ -2,7 +2,7 @@ import torch
 
 from chest_xray_detection.ml_detection_api.configs.settings import logging
 from chest_xray_detection.ml_detection_api.domain.wrappers.base_wrapper import BaseModelWrapper
-from chest_xray_detection.ml_detection_develop.dataset.transforms.utils import (
+from chest_xray_detection.ml_detection_develop.dataset.transforms.detection.utils import (
     instantiate_transforms_from_config,
 )
 from chest_xray_detection.ml_detection_develop.models.faster_rcnn import get_faster_rcnn
@@ -14,7 +14,7 @@ from chest_xray_detection.ml_detection_api.utils.formatting import convert_to_ap
 
 class MultiClassDetectionWrapper(BaseModelWrapper):
     @classmethod
-    def load(cls, config):
+    def load(cls, config, debug: bool = False):
         device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
         # if config.FROM_S3:
@@ -37,18 +37,12 @@ class MultiClassDetectionWrapper(BaseModelWrapper):
         model.load_state_dict(saved_model_dict["model"])
         logging.info("Weights loaded!")
 
-        return cls(
-            model=model,
-            device=device,
-            config=config,
-        )
+        return cls(model=model, device=device, config=config, debug=debug)
 
     def before_inference(self, image):
 
         transforms = instantiate_transforms_from_config(self.config.TRANSFORMS.INFERENCE)
-        print(transforms)
         image = transforms(image)
-        print(type(image))
         image = image.unsqueeze(0) / 255.0
         image = image.to(self.device)
         return image
@@ -58,7 +52,8 @@ class MultiClassDetectionWrapper(BaseModelWrapper):
         with torch.no_grad():
             outputs = self.model(processed_input)
 
-        print(outputs)
+        if self.debug:
+            print(outputs[0]["scores"])
         return [ObjectDetectionFormat(**output) for output in outputs]
 
     def after_inference(self, outputs: list[ObjectDetectionFormat]) -> ObjectDetectionFormat:
@@ -68,8 +63,9 @@ class MultiClassDetectionWrapper(BaseModelWrapper):
         output.to_cpu()
         output.filter_by_proba(config=self.config.POSTPROCESSING)
         output.nms_on_boxes(iou_threshold=self.config.POSTPROCESSING.NMS_IOU_THRESHOLDS)
-        # print(output)
-        print(f"Postprocessing output ==> {output}")
+
+        if self.debug:
+            print(f"Postprocessing output ==> {output}")
         return output
 
     def convert_output(self, output: ObjectDetectionFormat) -> list[BBoxPrediction]:
@@ -81,6 +77,9 @@ class MultiClassDetectionWrapper(BaseModelWrapper):
             classes_list=self.config.CLASSES,
             model_name=self.config.NAME,
         )
+
+        if self.debug:
+            print(f"list_detections : {list_detections}")
         # list_missing_tooth = add_keys(list_missing_tooth)
 
         if len(list_detections) == 0:

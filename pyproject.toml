@@ -42,6 +42,7 @@ tensorboard = "^2.17.0"
 faster-coco-eval = "^1.5.5"
 pycocotools = "^2.0.7"
 shapely = "^2.0.4"
+tqdm = "^4.66.4"
 
 [tool.poetry.group.dev]
 optional = true
