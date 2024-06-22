@@ -1,0 +1,73 @@
+EXPERIMENT: 2
+ROOT_PROJECT: /home/ubuntu/code/chest-xray-detection
+EXPERIMENT_FOLDER: ${ROOT_PROJECT}/experiments_classification/
+ROOT_EXPERIMENT: ${EXPERIMENT_FOLDER}/experiment_${EXPERIMENT}
+
+TRAINING:
+  EPOCHS: 30
+  BACKBONE: "mobilenet_v2"
+  PRETRAINED: TRUE
+  FINE_TUNE: TRUE
+  BATCH_SIZE: 128
+  OPTIMIZER: Adam
+  LEARNING_RATE:  0.001
+  LOSS: BCEWithLogitsLoss
+  WITH_LOGITS: TRUE
+  EVALUATION_FREQUENCY: 1
+  PRINT_FREQ: 1000
+  PATH_MODEL : ${..ROOT_EXPERIMENT}/saved_models
+  PATH_LOGS : ${..ROOT_EXPERIMENT}/training.log
+  ENABLE_TENSORBOARD : TRUE
+  TENSORBOARD_DIR: ${..ROOT_EXPERIMENT}/tensorboard_logs
+
+  CROSS_VALIDATION : FALSE
+
+  DATASET:
+    IMAGES_PATH : /home/ubuntu/data/images_resized
+    PATH_LABELS : /home/ubuntu/data/Data_Entry_2017_v2020.csv
+    PATH_BOXES : /home/ubuntu/data/BBox_List_2017.csv
+    N_CLASSES: 1
+    VALIDATION_SPLIT: 0.25
+    RANDOM_SEED: 42
+
+    WEIGHT_LOSS: TRUE
+
+    TRANSFORMS:
+      TRAINING:
+        frameworks: [
+          "torchvision", 
+          "torchvision", 
+          ]
+        classes: [
+          "RandomHorizontalFlip", 
+          "Normalize"
+          ]
+        classes_params: [
+          {"p": 0.5},
+          {"mean": [0.485, 0.456, 0.406],"std": [0.229, 0.224, 0.225] },
+        ]
+      VALIDATION:
+        frameworks: [
+          "torchvision", 
+          ]
+        classes: [
+          "Normalize"
+          ]
+        classes_params: [
+          {"mean": [0.485, 0.456, 0.406],"std": [0.229, 0.224, 0.225] },
+        ]
+
+
+VALIDATION:
+  SAVING_METRIC : MultilabelAUROC
+  METRICS_OF_INTEREST : #["FalseAcceptanceRate", "FalseRejectionRate", "HalfTotalErrorRate"]
+  METRICS:
+    frameworks: ["torchmetrics", "torchmetrics","torchmetrics","torchmetrics"]
+    classes: ["MultilabelAUROC", "MultilabelAccuracy", "MultilabelPrecision", "MultilabelRecall"]
+    classes_params: [
+      {"num_labels": 15},
+      {"num_labels": 15},
+      {"num_labels": 15},
+      {"num_labels": 15},
+
+    ]
