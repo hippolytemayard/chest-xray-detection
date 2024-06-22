@@ -43,6 +43,10 @@ faster-coco-eval = "^1.5.5"
 pycocotools = "^2.0.7"
 shapely = "^2.0.4"
 tqdm = "^4.66.4"
+fastapi = "^0.111.0"
+opencv-python = "^4.10.0.84"
+pydantic = "<2"
+streamlit = "^1.36.0"
 
 [tool.poetry.group.dev]
 optional = true

@@ -15,8 +15,8 @@ MODELS:
         ]
     
     POSTPROCESSING:
-      THRESHOLD : 0.01
-      NMS_IOU_THRESHOLDS : 0.9
+      THRESHOLD : 0.3
+      NMS_IOU_THRESHOLDS : 0.001
 
     CLASSES:
       1: 'Atelectasis'
