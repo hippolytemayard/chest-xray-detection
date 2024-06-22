@@ -65,6 +65,7 @@ def get_train_val_dataloaders(
         batch_size=batch_size,
         num_workers=num_workers,
         merge_classes=merge_classes,
+        shuffle=True,
     )
 
     val_loader = get_single_dataloader(
@@ -74,6 +75,7 @@ def get_train_val_dataloaders(
         batch_size=batch_size,
         num_workers=num_workers,
         merge_classes=merge_classes,
+        shuffle=False,
     )
 
     label_distribution = {
@@ -94,6 +96,7 @@ def get_single_dataloader(
     batch_size: int,
     num_workers: int = 4,
     merge_classes: bool = True,
+    shuffle: bool = False,
 ) -> DataLoader:
     """
     Get a single DataLoader from image paths and annotations file.
@@ -121,6 +124,7 @@ def get_single_dataloader(
         num_workers=num_workers,
         pin_memory=torch.cuda.is_available(),
         collate_fn=lambda batch: tuple(zip(*batch)),
+        shuffle=shuffle,
     )
 
     return dataloader

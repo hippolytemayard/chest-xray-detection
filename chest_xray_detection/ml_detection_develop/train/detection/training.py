@@ -50,7 +50,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--config",
         type=str,
-        default="chest_xray_detection/ml_detection_develop/configs/training/training_faster_rcnn.yaml",
+        default="chest_xray_detection/ml_detection_develop/configs/training/detection/training_faster_rcnn_single_class.yaml",
+        # default="chest_xray_detection/ml_detection_develop/configs/training/detection/training_faster_rcnn_mobilenet.yaml",
         help="Path to the configuration YAML file",
     )
     args = parser.parse_args()

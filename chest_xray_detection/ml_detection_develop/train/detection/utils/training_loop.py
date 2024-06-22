@@ -44,6 +44,9 @@ def training_loop(
             for t in targets
         ]
 
+        # if batch_idx == 0:
+        #    print(targets)
+
         loss_dict = model(images, targets)
         loss_reduced = sum(loss for loss in loss_dict.values())
 

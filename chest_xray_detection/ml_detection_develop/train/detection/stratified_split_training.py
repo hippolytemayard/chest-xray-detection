@@ -12,14 +12,21 @@ from chest_xray_detection.ml_detection_develop.dataset.transforms.detection.util
     instantiate_transforms_from_config,
 )
 from chest_xray_detection.ml_detection_develop.metrics.utils import instantiate_metrics_from_config
-from chest_xray_detection.ml_detection_develop.models.faster_rcnn import get_faster_rcnn
+from chest_xray_detection.ml_detection_develop.models.detection.faster_rcnn import get_faster_rcnn
 from chest_xray_detection.ml_detection_develop.optimizer import optimizer_dict
-from chest_xray_detection.ml_detection_develop.train.utils.evaluation_loop import evaluation_loop
-from chest_xray_detection.ml_detection_develop.train.utils.training_loop import training_loop
-from chest_xray_detection.ml_detection_develop.train.utils.validation_loop import validation_loop
+from chest_xray_detection.ml_detection_develop.train.detection.utils.evaluation_loop import (
+    evaluation_loop,
+)
+from chest_xray_detection.ml_detection_develop.train.detection.utils.training_loop import (
+    training_loop,
+)
+from chest_xray_detection.ml_detection_develop.train.detection.utils.validation_loop import (
+    validation_loop,
+)
 from chest_xray_detection.ml_detection_develop.utils.files import load_yaml, make_exists
 
 
+# TODO : modify if false
 def stratified_split_train_model_from_config(
     config: OmegaConf,
     device: torch.device,
@@ -45,16 +52,17 @@ def stratified_split_train_model_from_config(
         pretrained=config.TRAINING.PRETRAINED,
         num_classes=num_classes,
         backbone=config.TRAINING.BACKBONE,
-        trainable_backbone_layers=3,
+        trainable_backbone_layers=5,
     ).to(device)
 
-    print(config.TRAINING.BACKBONE)
+    logging.info(f"Backbone : {config.TRAINING.BACKBONE}")
 
-    logging.info(f"Load state dict")
-    path_model = Path("experiments/experiment_100/saved_models") / "best_model.pt"
-    model_state_dict = torch.load(path_model)
-    model.load_state_dict(model_state_dict["model"])
-    logging.info(f"Loading {path_model}")
+    if False:
+        logging.info(f"Load state dict")
+        path_model = Path("experiments/experiment_300/saved_models") / "best_model.pt"
+        model_state_dict = torch.load(path_model)
+        model.load_state_dict(model_state_dict["model"])
+        logging.info(f"Loading {path_model}")
 
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     logging.info(f"The model has {trainable_params} trainable parameters")

@@ -26,7 +26,7 @@ TRAINING:
     IMAGES_PATH : /home/ubuntu/data/images_resized
     PATH_LABELS : /home/ubuntu/data/Data_Entry_2017_v2020.csv
     PATH_BOXES : /home/ubuntu/data/BBox_List_2017.csv
-    N_CLASSES: 1
+    N_CLASSES: 9
     VALIDATION_SPLIT: 0.25
     RANDOM_SEED: 42
 

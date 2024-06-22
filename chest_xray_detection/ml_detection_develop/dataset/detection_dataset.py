@@ -39,6 +39,7 @@ class DetectionDataset(Dataset):
         self.df_annotation = pd.read_csv(annotation_filepath)
         self.transforms = transforms
         self.merge_classes = merge_classes
+        self.classes = [class_ for class_ in LABEL_MAPPING_DICT.mapping.encoding.keys()]
 
     def __len__(self) -> int:
         """
@@ -126,7 +127,7 @@ class DetectionDataset(Dataset):
         Returns:
             torch.Tensor: Tensor of bounding boxes.
         """
-        boxes = np.around(boxes, decimals=0)
+        boxes = boxes.astype(np.int16)
         boxes[:, 2] += boxes[:, 0]
         boxes[:, 3] += boxes[:, 1]
 

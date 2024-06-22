@@ -2,7 +2,8 @@ MODELS:
   MULTICLASS_DETECTION:
     NAME: "multiclass_detection"
     BACKBONE: "resnet50"
-    CKPT: "/home/ubuntu/code/chest-xray-detection/experiments/experiment_101/saved_models/best_model.pt"
+    #CKPT: "/home/ubuntu/code/chest-xray-detection/experiments/experiment_101/saved_models/best_model.pt"
+    CKPT: "/home/ubuntu/code/chest-xray-detection/experiments/experiment_300/saved_models/best_model.pt"
     NUM_CLASSES: 9
     TRANSFORMS:
       INFERENCE:
@@ -14,8 +15,8 @@ MODELS:
         ]
     
     POSTPROCESSING:
-      THRESHOLD : 0.07
-      NMS_IOU_THRESHOLDS : 0.2
+      THRESHOLD : 0.01
+      NMS_IOU_THRESHOLDS : 0.9
 
     CLASSES:
       1: 'Atelectasis'
@@ -26,3 +27,14 @@ MODELS:
       6: 'Nodule'
       7: 'Pneumonia' 
       8: 'Pneumothorax'
+
+    PATHOLOGY_COLORS:
+      Atelectasis: "rgba(82,255,223,1)"       # Cyan
+      Cardiomegaly: "rgba(255,165,0,1)"       # Orange
+      Effusion: "rgba(0,255,0,1)"             # Green
+      Infiltrate: "rgba(255,0,255,1)"         # Magenta
+      Mass: "rgba(0,102,255,1)"               # Blue
+      Nodule: "rgba(255,255,0,1)"             # Yellow
+      Pneumonia: "rgba(255,0,0,1)"            # Red
+      Pneumothorax: "rgba(143,0,255,1)"       # Purple
+

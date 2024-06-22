@@ -6,7 +6,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 from torchmetrics import MetricCollection
 
-from chest_xray_detection.ml_detection_develop.train.utils.postprocessing import (
+from chest_xray_detection.ml_detection_develop.train.detection.utils.postprocessing import (
     non_maximum_suppression,
     filter_scores,
 )

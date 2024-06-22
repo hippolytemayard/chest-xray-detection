@@ -5,7 +5,7 @@ from chest_xray_detection.ml_detection_api.domain.wrappers.base_wrapper import B
 from chest_xray_detection.ml_detection_develop.dataset.transforms.detection.utils import (
     instantiate_transforms_from_config,
 )
-from chest_xray_detection.ml_detection_develop.models.faster_rcnn import get_faster_rcnn
+from chest_xray_detection.ml_detection_develop.models.detection.faster_rcnn import get_faster_rcnn
 from chest_xray_detection.ml_detection_api.utils.objects.prediction import ObjectDetectionFormat
 from chest_xray_detection.ml_detection_api.utils.objects.base_objects import BBoxPrediction
 
@@ -71,7 +71,6 @@ class MultiClassDetectionWrapper(BaseModelWrapper):
     def convert_output(self, output: ObjectDetectionFormat) -> list[BBoxPrediction]:
 
         logging.info("Formatting predictions predictions..")
-        print(f"convert_output ==> {output}")
         list_detections = convert_to_api_format(
             output=output,
             classes_list=self.config.CLASSES,
@@ -80,7 +79,6 @@ class MultiClassDetectionWrapper(BaseModelWrapper):
 
         if self.debug:
             print(f"list_detections : {list_detections}")
-        # list_missing_tooth = add_keys(list_missing_tooth)
 
         if len(list_detections) == 0:
             logging.info("No anomaly detected!")
@@ -91,4 +89,9 @@ class MultiClassDetectionWrapper(BaseModelWrapper):
         outputs = self.inference(processed_input=processed_input)
         processed_output = self.after_inference(outputs=outputs)
         converted_output = self.convert_output(processed_output)
+
+        if self.debug:
+            print(f"output : {outputs}")
+            print(f"processed_output : {processed_output}")
+            print(f"converted_output : {converted_output}")
         return converted_output
