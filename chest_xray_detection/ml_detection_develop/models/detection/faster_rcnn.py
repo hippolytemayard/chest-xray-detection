@@ -1,5 +1,6 @@
 import logging
 
+import torch
 import torchvision
 from torchvision.models.detection import FasterRCNN
 from torchvision.models.detection.faster_rcnn import (
@@ -8,6 +9,11 @@ from torchvision.models.detection.faster_rcnn import (
 )
 from torchvision.models.detection.rpn import AnchorGenerator
 from torchvision.models.resnet import ResNet50_Weights
+
+from chest_xray_detection.ml_detection_develop.models.classification.models import (
+    get_mobilenet_v2_architecture,
+)
+from pathlib import Path
 
 
 def get_faster_rcnn(
@@ -86,7 +92,18 @@ def get_faster_rcnn_resnet50_backbone(
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights="DEFAULT")
 
     in_features = model.roi_heads.box_predictor.cls_score.in_features
-    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+    model.roi_heads.box_predictor = FastRCNNPredictor(in_channels=in_features, num_classes=9)
+
+    logging.info(f"Load state dict")
+    path_model = Path("experiments/experiment_300/saved_models") / "best_model.pt"
+    model_state_dict = torch.load(path_model)
+    model.load_state_dict(model_state_dict["model"])
+    logging.info(f"Loading {path_model}")
+
+    in_features = model.roi_heads.box_predictor.cls_score.in_features
+    model.roi_heads.box_predictor = FastRCNNPredictor(
+        in_channels=in_features, num_classes=num_classes
+    )
 
     return model
 
@@ -109,7 +126,25 @@ def get_faster_rcnn_mobilenet_backbone(
     """
     weights = "DEFAULT" if pretrained else None
 
-    backbone = torchvision.models.mobilenet_v2(weights=weights).features
+    model = torchvision.models.mobilenet_v2(weights=weights)
+
+    if pretrained:
+
+        model = get_mobilenet_v2_architecture(n_classes=15)
+
+        logging.info(f"Load backbone")
+        path_model = "/home/ubuntu/code/chest-xray-detection/experiments_classification/experiment_2/saved_models/best_model.pt"
+        model_state_dict = torch.load(path_model)
+        model.load_state_dict(model_state_dict["model"])
+
+        for param in model.parameters():
+            param.requires_grad = True
+
+        print(sum(p.numel() for p in model.parameters() if p.requires_grad))
+
+        logging.info(f"Loading {path_model}")
+
+    backbone = model.features
     backbone.out_channels = 1280
 
     anchor_generator = AnchorGenerator(
