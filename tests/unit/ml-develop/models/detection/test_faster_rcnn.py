@@ -83,7 +83,7 @@ def test_get_faster_rcnn_with_loading():
     )
 
     logging.info(f"Load state dict")
-    path_model = Path("experiments/experiment_300/saved_models") / "best_model.pt"
+    path_model = Path("chest_xray_detection/ml_detection_api/domain/models/faster_rcnn_r50_fpn.pt")
     model_state_dict = torch.load(path_model)
     model.load_state_dict(model_state_dict["model"])
     logging.info(f"Loading {path_model}")

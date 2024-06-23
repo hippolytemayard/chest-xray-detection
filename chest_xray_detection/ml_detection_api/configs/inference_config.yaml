@@ -3,7 +3,8 @@ MODELS:
     NAME: "multiclass_detection"
     BACKBONE: "resnet50"
     #CKPT: "/home/ubuntu/code/chest-xray-detection/experiments/experiment_101/saved_models/best_model.pt"
-    CKPT: "/home/ubuntu/code/chest-xray-detection/experiments/experiment_300/saved_models/best_model.pt"
+    #CKPT: "/home/ubuntu/code/chest-xray-detection/experiments/experiment_300/saved_models/best_model.pt"
+    CKPT: "chest_xray_detection/ml_detection_api/domain/models/faster_rcnn_r50_fpn.pt"
     NUM_CLASSES: 9
     TRANSFORMS:
       TASK: "detection"
