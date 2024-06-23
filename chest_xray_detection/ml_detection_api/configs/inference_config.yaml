@@ -6,6 +6,7 @@ MODELS:
     CKPT: "/home/ubuntu/code/chest-xray-detection/experiments/experiment_300/saved_models/best_model.pt"
     NUM_CLASSES: 9
     TRANSFORMS:
+      TASK: "detection"
       INFERENCE:
         frameworks: ["torchvision","torchvision"]
         classes: ["ToTensor","RGB"]

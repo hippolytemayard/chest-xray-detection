@@ -7,8 +7,10 @@ from omegaconf import OmegaConf
 from torch.utils.tensorboard import SummaryWriter
 
 from chest_xray_detection.ml_detection_develop.configs.settings import ANNOTATION_PATH
-from chest_xray_detection.ml_detection_develop.dataset.dataloader import get_train_val_dataloaders
-from chest_xray_detection.ml_detection_develop.dataset.transforms.detection.utils import (
+from chest_xray_detection.ml_detection_develop.dataset.detection.dataloader import (
+    get_train_val_dataloaders,
+)
+from chest_xray_detection.ml_detection_develop.dataset.transforms.utils import (
     instantiate_transforms_from_config,
 )
 from chest_xray_detection.ml_detection_develop.metrics.utils import instantiate_metrics_from_config
@@ -26,7 +28,6 @@ from chest_xray_detection.ml_detection_develop.train.detection.utils.validation_
 from chest_xray_detection.ml_detection_develop.utils.files import load_yaml, make_exists
 
 
-# TODO : modify if false
 def stratified_split_train_model_from_config(
     config: OmegaConf,
     device: torch.device,
@@ -45,6 +46,7 @@ def stratified_split_train_model_from_config(
         else None
     )
 
+    # Condition for merging classes
     num_classes = config.TRAINING.DATASET.NUM_CLASSES if not config.TRAINING.MERGE_CLASSES else 2
     logging.info(f"Number of classes : {num_classes}")
 
@@ -55,23 +57,16 @@ def stratified_split_train_model_from_config(
         trainable_backbone_layers=5,
     ).to(device)
 
-    logging.info(f"Backbone : {config.TRAINING.BACKBONE}")
-
-    if False:
-        logging.info(f"Load state dict")
-        path_model = Path("experiments/experiment_300/saved_models") / "best_model.pt"
-        model_state_dict = torch.load(path_model)
-        model.load_state_dict(model_state_dict["model"])
-        logging.info(f"Loading {path_model}")
-
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    logging.info(f"The model has {trainable_params} trainable parameters")
+
+    logging.info(f"Model backbone : {config.TRAINING.BACKBONE}")
+    logging.info(f"Model trainable parameters: {trainable_params}")
 
     train_transforms = instantiate_transforms_from_config(
-        transform_config=config.TRAINING.DATASET.TRANSFORMS.TRAINING
+        transform_config=config.TRAINING.DATASET.TRANSFORMS.TRAINING, task="detection"
     )
     val_transforms = instantiate_transforms_from_config(
-        transform_config=config.TRAINING.DATASET.TRANSFORMS.VALIDATION
+        transform_config=config.TRAINING.DATASET.TRANSFORMS.VALIDATION, task="detection"
     )
 
     (train_loader, val_loader, distribution) = get_train_val_dataloaders(
@@ -101,7 +96,6 @@ def stratified_split_train_model_from_config(
     for epoch in range(1, config.TRAINING.EPOCHS + 1):
 
         logging.info(f"EPOCH {epoch}")
-
         training_loop(
             model=model,
             loader=train_loader,

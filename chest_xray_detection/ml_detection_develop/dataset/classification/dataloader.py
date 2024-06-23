@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Union
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -9,16 +10,14 @@ from chest_xray_detection.ml_detection_develop.dataset.classification.classifica
     ClassificationDataset,
 )
 
-# TODO : clean code
-
 
 def get_train_val_dataloaders(
-    images_path: str | Path,
-    annotation_filepath: str | Path,
-    annotation_box_filepath: str | Path,
+    images_path: Union[str, Path],
+    annotation_filepath: Union[str, Path],
+    annotation_box_filepath: Union[str, Path],
     batch_size: int,
-    train_transforms,
-    val_transforms,
+    train_transforms: transforms.Compose,
+    val_transforms: transforms.Compose,
     val_size: float = 0.25,
 ) -> tuple[DataLoader, DataLoader, dict[int, float]]:
     """
@@ -26,13 +25,13 @@ def get_train_val_dataloaders(
     train/val split.
 
     Args:
-        images_list (list): List of image file paths.
-        labels (list): List of corresponding labels for images.
+        images_path (Union[str, Path]): Path to the directory containing images.
+        annotation_filepath (Union[str, Path]): Path to the CSV file containing image annotations.
+        annotation_box_filepath (Union[str, Path]): Path to the CSV file containing image box annotations.
         batch_size (int): Batch size for DataLoader.
-        train_transforms: Transformations to apply to training data.
-        val_transforms: Transformations to apply to validation data.
-        val_size (float, optional): Percentage of data to use for validation.
-            Defaults to 0.25.
+        train_transforms (transforms.Compose): Transformations to apply to training data.
+        val_transforms (transforms.Compose): Transformations to apply to validation data.
+        val_size (float, optional): Percentage of data to use for validation. Defaults to 0.25.
 
     Returns:
         tuple[DataLoader, DataLoader, dict[int, float]]: Tuple containing
@@ -45,7 +44,7 @@ def get_train_val_dataloaders(
     images_list = df_annotation["Image Index"].to_list()
 
     discarded_images = box_annotation["Image Index"].to_list()
-    images_list = [images for images in images_list if images not in discarded_images]
+    images_list = [image for image in images_list if image not in discarded_images]
 
     labels = (
         df_annotation[df_annotation["Image Index"].isin(images_list)]["Finding Labels"]
@@ -87,25 +86,25 @@ def get_train_val_dataloaders(
 
 
 def get_single_dataloader(
-    images_path: str,
+    images_path: Union[str, Path],
     images_list: list,
-    annotation_filepath: str | Path,
-    transform: transforms,
+    annotation_filepath: Union[str, Path],
+    transform: transforms.Compose,
     batch_size: int,
     num_workers: int = 4,
-    shuffle=False,
+    shuffle: bool = False,
 ) -> DataLoader:
     """
     Function to get a single DataLoader from image path and labels files.
 
     Args:
+        images_path (Union[str, Path]): Path to the directory containing images.
         images_list (list): List of image file paths.
-        labels (list): List of corresponding labels for images.
-        transform: Transformations to apply to data.
+        annotation_filepath (Union[str, Path]): Path to the CSV file containing image annotations.
+        transform (transforms.Compose): Transformations to apply to data.
         batch_size (int): Batch size for DataLoader.
-        num_workers (int, optional): Number of subprocesses to use for data
-            loading. Defaults to 4.
-
+        num_workers (int, optional): Number of subprocesses to use for data loading. Defaults to 4.
+        shuffle (bool, optional): Whether to shuffle the data. Defaults to False.
 
     Returns:
         DataLoader: DataLoader for the dataset.
