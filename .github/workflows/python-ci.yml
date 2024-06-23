@@ -29,6 +29,7 @@ jobs:
 
     - name: Download model weights
       run : |
+        pip install gdown
         gdown 1xj44hXRfNeCyPgyaA1bsbleHJCuAFh82
         mv faster_rcnn_r50_fpn.pt chest_xray_detection/ml_detection_api/domain/models/faster_rcnn_r50_fpn.pt
 
