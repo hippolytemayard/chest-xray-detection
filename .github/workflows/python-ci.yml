@@ -22,7 +22,7 @@ jobs:
         python-version: '3.10.5'
 
     - name: Download model weights
-        run : |
+      run : |
           pip install --upgrade pip
           pip install gdown
           gdown 1xj44hXRfNeCyPgyaA1bsbleHJCuAFh82
