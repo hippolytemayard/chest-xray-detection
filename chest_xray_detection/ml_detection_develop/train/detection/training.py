@@ -5,18 +5,10 @@ from typing import Union
 import torch
 from omegaconf import OmegaConf
 
-"""
-from chest_xray_detection.ml_detection_develop.train.cross_validation_training import (
-    cross_validation_training_from_config,
-)
-"""
 from chest_xray_detection.ml_detection_develop.train.detection.stratified_split_training import (
     stratified_split_train_model_from_config,
 )
-from chest_xray_detection.ml_detection_develop.utils.files import (
-    load_yaml,
-    make_exists,
-)
+from chest_xray_detection.ml_detection_develop.utils.files import load_yaml, make_exists
 
 
 def train_model_from_config(
@@ -40,13 +32,11 @@ def train_model_from_config(
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Train model using configuration file")
     parser.add_argument(
         "--config",
         type=str,
-        default="chest_xray_detection/ml_detection_develop/configs/training/detection/training_faster_rcnn_single_class.yaml",
-        # default="chest_xray_detection/ml_detection_develop/configs/training/detection/training_faster_rcnn_mobilenet.yaml",
+        default="chest_xray_detection/ml_detection_develop/configs/training/detection/training_faster_rcnn.yaml",
         help="Path to the configuration YAML file",
     )
     args = parser.parse_args()
