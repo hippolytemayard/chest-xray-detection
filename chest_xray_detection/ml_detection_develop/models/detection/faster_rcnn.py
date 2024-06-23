@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 import torch
 import torchvision
@@ -13,7 +14,6 @@ from torchvision.models.resnet import ResNet50_Weights
 from chest_xray_detection.ml_detection_develop.models.classification.models import (
     get_mobilenet_v2_architecture,
 )
-from pathlib import Path
 
 
 def get_faster_rcnn(
@@ -82,23 +82,10 @@ def get_faster_rcnn_resnet50_backbone(
     logging.info(f"weights : {weights}")
     logging.info(f"weights_backbone : {weights_backbone}")
 
-    # model = torchvision.models.detection.fasterrcnn_resnet50_fpn_v2(
-    #    weights=weights,
-    #    weights_backbone=weights_backbone,
-    #    trainable_backbone_layers=trainable_backbone_layers,
-    #    box_score_thresh=box_score_thresh,
-    # )
-
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights="DEFAULT")
 
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     model.roi_heads.box_predictor = FastRCNNPredictor(in_channels=in_features, num_classes=9)
-
-    logging.info(f"Load state dict")
-    path_model = Path("experiments/experiment_300/saved_models") / "best_model.pt"
-    model_state_dict = torch.load(path_model)
-    model.load_state_dict(model_state_dict["model"])
-    logging.info(f"Loading {path_model}")
 
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     model.roi_heads.box_predictor = FastRCNNPredictor(

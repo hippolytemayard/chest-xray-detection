@@ -134,7 +134,6 @@ class MultiClassDetectionWrapper(BaseModelWrapper):
             list[BBoxPrediction]: List of BBoxPrediction objects representing detected anomalies.
         """
         processed_input = self.before_inference(image=image)
-        print(processed_input.shape)
         outputs = self.inference(processed_input=processed_input)
         processed_output = self.after_inference(outputs=outputs)
         converted_output = self.convert_output(processed_output)

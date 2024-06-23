@@ -27,21 +27,6 @@ TRAINING:
     VALIDATION_SPLIT: 0.2
     RANDOM_SEED: 42
 
-    #TRANSFORMS:
-    #  TRAINING:
-    #    frameworks: ["torchvision", "torchvision"]
-    #    classes: ["RGB" , "RandomHorizontalFlip"]
-    #    classes_params: [
-    #      {},
-    #      {"p": 0.5},
-    #    ]
-    #  VALIDATION:
-    #    frameworks: ["torchvision"]
-    #    classes: ["RGB"]
-    #    classes_params: [
-    #      {},
-    #    ]
-
     TRANSFORMS:
       TRAINING:
         frameworks: ["torchvision","torchvision","torchvision","torchvision"]
