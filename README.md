@@ -156,3 +156,4 @@ For more detailed information about the model training procedure, please refer t
 
 - [ ] Create a Docker Image.
 - [ ] Adding integration tests.
+- [ ] DVC for model and data versionning.
