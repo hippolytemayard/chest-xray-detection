@@ -179,8 +179,6 @@ def get_image_metrics(
                 FN = ((best_ious < iou_thresh) * match_detected_target).int()
                 FP = torch.ones(size=TP.shape, device=device).int() - TP - FN
 
-            # print(TP)
-            # print(f"detected_labels : {detected_labels}")
             dict_metrics[detected_labels]["TP"] += TP.tolist()
             dict_metrics[detected_labels]["FP"] += FP.tolist()
             dict_metrics[detected_labels]["FN"] += FN.tolist()

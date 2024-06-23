@@ -14,7 +14,6 @@ def run_xray_detection(
 ) -> list[BBoxPrediction]:
 
     image = load_image_from_bytes(image_bytes=image)
-    print(image.shape)
     detected_pathology = detection_model.__call__(image=image)
 
     if debug:

@@ -11,8 +11,6 @@ from chest_xray_detection.ml_detection_api.utils.objects.custom_typing import (
     get_json_schema_compatible_custom_typing,
 )
 
-# from __future__ import annotations
-
 
 Polygon_ = get_json_schema_compatible_custom_typing(Polygon)
 
@@ -41,11 +39,6 @@ class BaseObject(BaseModel):
 
 class BBoxPrediction(BaseObject):
     polygon: Optional[Polygon_] = Field(default=None, exclude=True)
-    # polygon = Field(default=None, exclude=True)
-
-    # def resize(self, factor: float) -> None:
-    #    super().resize(factor=factor)
-    #    self.polygon = resize_polygon(polygon=self.polygon, factor=factor)
 
 
 @dataclass
