@@ -1,0 +1,1 @@
+streamlit run chest_xray_detection/ml_detection_api/application/streamlit/chest_detection_app.py --  -u http://127.0.0.1:8000/

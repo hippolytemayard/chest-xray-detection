@@ -49,6 +49,7 @@ pydantic = "<2"
 streamlit = "^1.36.0"
 pytest = "^8.2.2"
 gdown = "^5.2.0"
+pre-commit = "^3.7.1"
 
 [tool.poetry.group.dev]
 optional = true

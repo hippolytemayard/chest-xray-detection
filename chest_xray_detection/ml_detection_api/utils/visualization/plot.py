@@ -1,6 +1,7 @@
+from typing import Optional
+
 import numpy as np
 import plotly.express as px
-from typing import Optional
 
 from chest_xray_detection.ml_detection_api.utils.objects.base_objects import BBoxPrediction
 
@@ -20,7 +21,7 @@ def plot_predictions(
         if detection.detection_scores is None or detection.detection_poly is None:
             continue
         polygon_array = np.asarray([(coords.x, coords.y) for coords in detection.detection_poly])
-        text = f"{detection.detection_patology}<br>Proba: {np.round(detection.detection_scores, decimals=4)}"
+        text = f"{detection.detection_patology}<br>Score: {np.round(detection.detection_scores, decimals=2)}"
         if detection.detection_patology in detection_color:
             color_contour = detection_color[detection.detection_patology]
         else:
@@ -30,7 +31,7 @@ def plot_predictions(
                 else "rgba(255, 80, 80,1)"
             )
         color_fill = color_contour[:-2] + ".1)"
-        # Calculer le centre du polygone pour placer le texte
+
         centroid_x = np.mean(polygon_array[:, 0])
         centroid_y = np.mean(polygon_array[:, 1])
 
@@ -52,24 +53,9 @@ def plot_predictions(
             text=[text],
             showlegend=False,
             hoverinfo="skip",
-            # textposition="top right",
             textposition="middle center",
             textfont=dict(color=color_contour),
         )
-
-        # fig.add_scatter(
-        #    x=polygon_array[:, 0],
-        #    y=polygon_array[:, 1],
-        #    mode="lines",
-        #    line=dict(dash="dot", width=2, color=color_contour),
-        #    hoverinfo="text",
-        #    fill="tozeroy",
-        #    fillcolor=color_fill,
-        #    text=text,
-        #    name=detection.detection_patology,
-        #    showlegend=False,
-        # )
-
     fig.update_xaxes(visible=False)
     fig.update_yaxes(visible=False)
     fig.update_layout(
@@ -98,7 +84,7 @@ def plot_json_predictions(
         polygon_array = np.asarray(
             [(coords["x"], coords["y"]) for coords in detection["detection_poly"]]
         )
-        text = f"{detection['detection_patology']}<br>Proba: {np.round(detection['detection_scores'], decimals=4)}"
+        text = f"{detection['detection_patology']}<br>Score: {np.round(detection['detection_scores'], decimals=2)}"
         if detection["detection_patology"] in detection_color:
             color_contour = detection_color[detection["detection_patology"]]
         else:
@@ -108,7 +94,7 @@ def plot_json_predictions(
                 else "rgba(255, 80, 80,1)"
             )
         color_fill = color_contour[:-2] + ".1)"
-        # Calculer le centre du polygone pour placer le texte
+
         centroid_x = np.mean(polygon_array[:, 0])
         centroid_y = np.mean(polygon_array[:, 1])
 
@@ -119,7 +105,6 @@ def plot_json_predictions(
             text=[text],
             showlegend=False,
             hoverinfo="skip",
-            # textposition="top right",
             textposition="middle center",
             textfont=dict(color=color_contour),
         )
@@ -129,9 +114,10 @@ def plot_json_predictions(
             y=polygon_array[:, 1],
             mode="lines",
             line=dict(dash="dot", width=2, color=color_contour),
-            hoverinfo="skip",
+            hoverinfo="text",
             fill="tozeroy",
             fillcolor=color_fill,
+            text=text,
             name=detection["detection_patology"],
         )
 
