@@ -36,11 +36,6 @@ def train_model_from_config(
     Returns:
         None
     """
-
-    # if config.TRAINING.CROSS_VALIDATION:
-    #    cross_validation_training_from_config(config=config, device=device)
-    #
-    # else:
     stratified_split_train_model_from_config(config=config, device=device)
 
 

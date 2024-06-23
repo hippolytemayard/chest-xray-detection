@@ -21,17 +21,19 @@ jobs:
       with:
         python-version: '3.10.5'
 
+    - name: Download model weights
+        run : |
+          pip install --upgrade pip
+          pip install gdown
+          gdown 1xj44hXRfNeCyPgyaA1bsbleHJCuAFh82
+          pwd
+          ls
+          mv faster_rcnn_r50_fpn.pt chest_xray_detection/ml_detection_api/domain/models/faster_rcnn_r50_fpn.pt
+
     - name: Install Poetry
       run: |
-        pip install --upgrade pip
         pip install poetry
         poetry install -v
-
-    - name: Download model weights
-      run : |
-        pip install gdown
-        gdown 1xj44hXRfNeCyPgyaA1bsbleHJCuAFh82
-        mv faster_rcnn_r50_fpn.pt chest_xray_detection/ml_detection_api/domain/models/faster_rcnn_r50_fpn.pt
 
     - name: Run tests
       run: |
