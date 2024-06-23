@@ -47,6 +47,7 @@ fastapi = "^0.111.0"
 opencv-python = "^4.10.0.84"
 pydantic = "<2"
 streamlit = "^1.36.0"
+pytest = "^8.2.2"
 
 [tool.poetry.group.dev]
 optional = true

@@ -28,9 +28,6 @@ def health_check():
     return "API is ready!"
 
 
-EXCLUDE_VERIFICATION_PATHS = ["/", "/api/"]  # TODO: remove this when fixed
-
-
 @app.post("/api/pathology-detection", response_model=list[BBoxPrediction])
 def chest_xray_analysis(file: UploadFile = File(...)) -> list[BBoxPrediction]:
     print(file)

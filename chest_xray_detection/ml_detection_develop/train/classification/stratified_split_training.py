@@ -4,15 +4,12 @@ from pathlib import Path
 
 import torch
 from omegaconf import OmegaConf
-
-# from therapanacea_project.utils.files import load_yaml, make_exists
-# from therapanacea_project.utils.io import read_txt_object
 from torch.utils.tensorboard import SummaryWriter
 
 from chest_xray_detection.ml_detection_develop.dataset.classification.dataloader import (
     get_train_val_dataloaders,
 )
-from chest_xray_detection.ml_detection_develop.dataset.transforms.classification.utils import (
+from chest_xray_detection.ml_detection_develop.dataset.transforms.utils import (
     instantiate_transforms_from_config,
 )
 from chest_xray_detection.ml_detection_develop.losses import losses_dict
@@ -51,10 +48,10 @@ def stratified_split_train_model_from_config(
     )
 
     train_transforms = instantiate_transforms_from_config(
-        transform_config=config.TRAINING.DATASET.TRANSFORMS.TRAINING
+        transform_config=config.TRAINING.DATASET.TRANSFORMS.TRAINING, task="classification"
     )
     val_transforms = instantiate_transforms_from_config(
-        transform_config=config.TRAINING.DATASET.TRANSFORMS.VALIDATION
+        transform_config=config.TRAINING.DATASET.TRANSFORMS.VALIDATION, task="classification"
     )
 
     train_loader, val_loader, label_distribution = get_train_val_dataloaders(

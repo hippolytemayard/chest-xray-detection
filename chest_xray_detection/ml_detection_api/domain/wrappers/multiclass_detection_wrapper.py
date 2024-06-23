@@ -2,7 +2,7 @@ import torch
 
 from chest_xray_detection.ml_detection_api.configs.settings import logging
 from chest_xray_detection.ml_detection_api.domain.wrappers.base_wrapper import BaseModelWrapper
-from chest_xray_detection.ml_detection_develop.dataset.transforms.detection.utils import (
+from chest_xray_detection.ml_detection_develop.dataset.transforms.utils import (
     instantiate_transforms_from_config,
 )
 from chest_xray_detection.ml_detection_develop.models.detection.faster_rcnn import get_faster_rcnn
@@ -41,7 +41,9 @@ class MultiClassDetectionWrapper(BaseModelWrapper):
 
     def before_inference(self, image):
 
-        transforms = instantiate_transforms_from_config(self.config.TRANSFORMS.INFERENCE)
+        transforms = instantiate_transforms_from_config(
+            self.config.TRANSFORMS.INFERENCE, task=self.config.TRANSFORMS.TASK
+        )
         image = transforms(image)
         image = image.unsqueeze(0) / 255.0
         image = image.to(self.device)

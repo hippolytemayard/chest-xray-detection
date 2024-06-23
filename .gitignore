@@ -5,9 +5,12 @@
 **/.ipynb_checkpoints/
 **/.vscode/
 **experiments/*
+**experiments_classification/*
 
 # Files
 /*.jpg
 /**/*.txt
 /**/*.zip
 /**/.DS_Store
+/*.ipynb
+/poetry.lock

@@ -3,12 +3,13 @@ from typing import Union
 
 import torchvision
 from omegaconf import OmegaConf
-from torchvision.transforms import Compose
+from torchvision.transforms.v2 import Compose
+import torchvision.transforms.v2
 
 
-# TODO : summarize with detection
 def instantiate_transforms_from_config(
-    transform_config: dict[str, list[Union[str, dict]]]
+    transform_config: dict[str, list[Union[str, dict]]],
+    task: str = "detection",
 ) -> Compose:
     """
     Instantiate transformations from a configuration dictionary.
@@ -30,6 +31,9 @@ def instantiate_transforms_from_config(
         ValueError: If an error occurs during the transformation instantiation
             process.
     """
+    torchvision_transform = (
+        torchvision.transforms.v2 if task == "detection" else torchvision.transforms
+    )
     compositions = []
     try:
         for framework, fn_name, fn_params in zip(
@@ -39,7 +43,9 @@ def instantiate_transforms_from_config(
         ):
             fn_params = OmegaConf.to_object(fn_params)
             if framework == "torchvision":
-                fn = getattr(torchvision.transforms, fn_name)(**fn_params)
+                fn = getattr(torchvision_transform, fn_name)(**fn_params)
+            else:
+                continue
             compositions.append(fn)
 
             logging.info(f"compositions: {compositions}")
