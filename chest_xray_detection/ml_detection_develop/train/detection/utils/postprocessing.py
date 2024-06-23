@@ -1,5 +1,4 @@
-from ast import Raise
-from typing import Optional
+from typing import Optional, Union
 
 import torch
 from torchvision.ops import nms
@@ -14,12 +13,12 @@ def non_maximum_suppression(
 
     Args:
         predictions (dict[str, torch.Tensor]): Dictionary containing 'boxes', 'scores', and 'labels'.
-        iou_threshold (float): Intersection over Union (IoU) threshold for NMS.
+        iou_threshold (float, optional): Intersection over Union (IoU) threshold for NMS. Default is 0.5.
 
     Returns:
         Optional[dict[str, torch.Tensor]]: Dictionary containing the filtered 'boxes', 'scores', and 'labels' after NMS.
+            Returns None if predictions are empty after NMS.
     """
-
     nms_indexes = nms(
         boxes=predictions["boxes"],
         scores=predictions["scores"],
@@ -55,24 +54,23 @@ def filter_prediction_indexes(
     }
 
 
-def filter_scores(predictions: dict[str, torch.Tensor], scores: int) -> dict[str, torch.Tensor]:
-    """TODO: docstring
+def filter_scores(
+    predictions: Union[dict[str, torch.Tensor], list[dict[str, torch.Tensor]]], scores: float
+) -> dict[str, torch.Tensor]:
+    """
+    Filters predictions based on score threshold.
 
     Args:
-        predictions (dict[str, torch.Tensor]): _description_
-        scores (int): _description_
+        predictions (Union[dict[str, torch.Tensor], list[dict[str, torch.Tensor]]]): Dictionary or list of dictionaries
+            containing 'boxes', 'scores', and 'labels'.
+        scores (float): Minimum score threshold for filtering.
 
     Returns:
-        dict[str, torch.Tensor]: _description_
+        dict[str, torch.Tensor]: Filtered predictions dictionary containing 'boxes', 'scores', and 'labels'.
     """
-
     if isinstance(predictions, list):
         predictions = predictions[0]
-
-    elif isinstance(predictions, dict):
-        pass
-
-    else:
+    elif not isinstance(predictions, dict):
         raise TypeError("predictions must be a list or a dictionary")
 
     indexes = predictions["scores"] > scores

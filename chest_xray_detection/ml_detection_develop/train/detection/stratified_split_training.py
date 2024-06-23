@@ -28,7 +28,6 @@ from chest_xray_detection.ml_detection_develop.train.detection.utils.validation_
 from chest_xray_detection.ml_detection_develop.utils.files import load_yaml, make_exists
 
 
-# TODO : modify if false
 def stratified_split_train_model_from_config(
     config: OmegaConf,
     device: torch.device,
@@ -47,6 +46,7 @@ def stratified_split_train_model_from_config(
         else None
     )
 
+    # Condition for merging classes
     num_classes = config.TRAINING.DATASET.NUM_CLASSES if not config.TRAINING.MERGE_CLASSES else 2
     logging.info(f"Number of classes : {num_classes}")
 

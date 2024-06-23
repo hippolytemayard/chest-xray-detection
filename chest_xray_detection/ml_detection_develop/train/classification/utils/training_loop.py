@@ -8,7 +8,6 @@ from torch.utils.data import DataLoader
 from torchmetrics import MetricCollection
 
 
-# TODO : enlever le debug
 def training_loop(
     model: nn.Module,
     loader: DataLoader,
@@ -21,27 +20,23 @@ def training_loop(
     log_interval: int = 200,
     writer=None,
     device: Union[str, torch.device] = "cpu",
-    debug: bool = False,
 ) -> None:
     """
     Model training loop.
 
     Args:
-        model (nn.Module): The model model to train.
-        loader (DataLoader): The data loader providing the training data.
-        criterion (nn.modules.loss._Loss): The loss function
-        epoch (int): The current epoch number.
-        optimizer (Optimizer): The optimizer used for training.
-        with_logits (bool, optional): Indicates whether the model output
-            includes logits. Defaults to False.
-        metrics_collection (Optional[MetricCollection], optional): Collection
-            of metrics to compute during training. Defaults to None.
-        log_interval (int, optional): Interval for logging training progress.
-            Defaults to 200.
-        writer (optional): Object for writing training progress to a log.
-            Defaults to None.
-        device (Union[str, torch.device], optional): Device on which to
-            perform training. Defaults to "cpu".
+        model (nn.Module): The model to train.
+        loader (DataLoader): DataLoader providing the training data.
+        criterion (nn.modules.loss._Loss): Loss function.
+        epoch (int): Current epoch number.
+        optimizer (Optimizer): Optimizer used for training.
+        label_weights (Optional[torch.Tensor], optional): Weights for each class label. Defaults to None.
+        with_logits (bool, optional): Whether the model output includes logits. Defaults to False.
+        metrics_collection (Optional[MetricCollection], optional): Collection of metrics to compute during training. Defaults to None.
+        log_interval (int, optional): Interval for logging training progress. Defaults to 200.
+        writer (optional): Object for writing training progress to a log. Defaults to None.
+        device (Union[str, torch.device], optional): Device for training. Defaults to "cpu".
+        debug (bool, optional): Whether to run in debug mode. Defaults to False.
     """
     model.train()
 
@@ -54,17 +49,8 @@ def training_loop(
         output = model(data)
         prediction = torch.sigmoid(output).squeeze(1)
 
-        # loss = criterion(prediction, target) if not with_logits else criterion(output, target)
         loss = criterion(output, target)
-        loss = (loss * label_weights).mean()
-
-        # print(loss)
-        if debug:
-            # print(f"pred shape : {prediction.shape}")
-            # print(f"target shape : {target.unsqueeze(-1).shape}")
-            print(f"prediction : {(prediction > 0.5).float()}")
-            print(f"target : {target}")
-            print(loss.shape)
+        loss = (loss * label_weights).mean() if label_weights is not None else loss.mean()
 
         if writer is not None:
             writer.add_scalar(
@@ -77,7 +63,6 @@ def training_loop(
             metrics_collection.update(prediction, target.long())
 
         loss.backward()
-
         optimizer.step()
 
         if batch_idx % log_interval == 0:
@@ -87,16 +72,14 @@ def training_loop(
                     batch_idx * len(data),
                     len(loader.dataset),
                     100.0 * batch_idx / len(loader),
-                    loss.data.item(),
+                    loss.item(),
                 )
             )
-            # logging.info(f"Metrics state : {state_metrics}")
 
     if metrics_collection is not None:
         metrics = metrics_collection.compute()
 
         for k, v in metrics.items():
-
             logging.info(f"Training | {k} = {v.detach().cpu().item()}")
 
             if writer is not None:
