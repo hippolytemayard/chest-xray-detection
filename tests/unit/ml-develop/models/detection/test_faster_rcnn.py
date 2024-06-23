@@ -31,7 +31,7 @@ def test_get_faster_rcnn_resnet50_backbone():
 
 def test_get_faster_rcnn_mobilenet_backbone():
     num_classes = 15
-    pretrained = True
+    pretrained = False
     box_score_thresh = 0.5
 
     model = get_faster_rcnn_mobilenet_backbone(
@@ -39,8 +39,6 @@ def test_get_faster_rcnn_mobilenet_backbone():
         pretrained=pretrained,
         box_score_thresh=box_score_thresh,
     )
-
-    print(model.backbone[-1])
 
     assert isinstance(model, FasterRCNN)
     assert model.backbone.__class__.__name__ == "Sequential"
