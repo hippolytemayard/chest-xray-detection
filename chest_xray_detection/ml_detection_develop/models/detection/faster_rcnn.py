@@ -87,13 +87,6 @@ def get_faster_rcnn_resnet50_backbone(
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     model.roi_heads.box_predictor = FastRCNNPredictor(in_channels=in_features, num_classes=9)
 
-    # TODO: remove
-    # logging.info(f"Load state dict")
-    # path_model = Path("experiments/experiment_300/saved_models") / "best_model.pt"
-    # model_state_dict = torch.load(path_model)
-    # model.load_state_dict(model_state_dict["model"])
-    # logging.info(f"Loading {path_model}")
-
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     model.roi_heads.box_predictor = FastRCNNPredictor(
         in_channels=in_features, num_classes=num_classes
